@@ -1,0 +1,68 @@
+// Prisma schema for PMCH Hospital Utility App
+// Three models: Department, FAQ, EmergencyContact
+// All data is read-only for end users, seeded via script
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Department ───────────────────────────────────────────────
+// Represents a hospital department (e.g., Orthopaedics, Cardiology)
+// Bilingual: Hindi (Hi) + English (En) fields
+model Department {
+  id              Int      @id @default(autoincrement())
+  nameHi          String   // Department name in Hindi
+  nameEn          String   // Department name in English
+  descriptionHi   String   // Description in Hindi
+  descriptionEn   String   // Description in English
+  opdTimings      String   // OPD timing text, e.g. "Mon-Sat 8:00 AM - 2:00 PM"
+  locationText    String   // Location in English, e.g. "Block A, Ground Floor"
+  locationTextHi  String   // Location in Hindi
+  order           Int      @default(0) // Display order on screen
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("departments")
+}
+
+// ─── FAQ ──────────────────────────────────────────────────────
+// Frequently asked questions, categorized
+// Bilingual: question + answer in both Hindi and English
+model FAQ {
+  id         Int      @id @default(autoincrement())
+  questionHi String   // Question in Hindi
+  questionEn String   // Question in English
+  answerHi   String   // Answer in Hindi
+  answerEn   String   // Answer in English
+  category   String   // Category for grouping, e.g. "general", "opd", "admission"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+// ─── EmergencyContact ─────────────────────────────────────────
+// Emergency phone numbers: ambulance, emergency ward, helpdesk
+model EmergencyContact {
+  id        Int              @id @default(autoincrement())
+  name      String           // Contact name in English
+  nameHi    String           // Contact name in Hindi
+  phone     String           // Phone number
+  type      ContactType      // Category of contact
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@map("emergency_contacts")
+}
+
+// Enum for emergency contact types
+enum ContactType {
+  AMBULANCE
+  EMERGENCY
+  HELPDESK
+}
